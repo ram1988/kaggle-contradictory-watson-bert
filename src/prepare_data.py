@@ -12,7 +12,7 @@ def load_sentences(file_path):
     return df["premise"], df["hypothesis"], (df["label"] if "label" in df else None), df["id"]
 
 def prepare_train_dataset():
-    train_premise, train_hypothesis, train_labels, train_ids = load_sentences("./train.csv")
+    train_premise, train_hypothesis, train_labels, train_ids = load_sentences("../data/train.csv")
     print("the total recs-->")
     print(len(train_premise))
     encoded_train_dataset = []
@@ -21,7 +21,7 @@ def prepare_train_dataset():
     input_mask = []
     input_type_ids =  []
 
-    for i, premise in enumerate(train_premise[0:10]):
+    for i, premise in enumerate(train_premise):
         hypothesis = train_hypothesis[i]
         encoded = classifier.pre_process_hyp_prem_pairs(premise, hypothesis)
         input_word_ids.append(encoded['input_word_ids'])
@@ -39,7 +39,7 @@ def prepare_train_dataset():
         'input_word_ids': input_word_ids,
         'input_mask': input_mask,
         'input_type_ids': input_type_ids}
-    train_labels = np.array(train_labels[0:10])
+    train_labels = np.array(train_labels)
 
     prepared_train_dataset = [inputs, train_labels]
     pickle.dump(prepared_train_dataset, open("prepared_train_dataset.pkl", "wb"))
@@ -72,7 +72,7 @@ def predict_outcome(text):
     return predicted
 
 def predict_outcomes():
-    test_texts, test_labels, test_id = load_sentences("./data/test.csv")
+    test_texts, test_labels, test_id = load_sentences("../data/test.csv")
     with open('outcome.csv', 'a') as outcome_file:
         outcome_file.write("id,target")
         for i, test_text in enumerate(test_texts):
