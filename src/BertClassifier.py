@@ -3,20 +3,11 @@ import tensorflow as tf
 from transformers import BertTokenizer, TFBertModel
 from tensorflow import keras
 
-try:
-    tpu = tf.distribute.cluster_resolver.TPUClusterResolver()
-    tf.config.experimental_connect_to_cluster(tpu)
-    tf.tpu.experimental.initialize_tpu_system(tpu)
-    strategy = tf.distribute.experimental.TPUStrategy(tpu)
-except ValueError:
-    strategy = tf.distribute.get_strategy() # for CPU and single GPU
-    print('Number of replicas:', strategy.num_replicas_in_sync)
-
 #https://huggingface.co/transformers/glossary.html#attention-mask
 class BertClassifier:
 
     MODEL_FILE_PATH = './model/bert_model.pkl'
-    EPOCHS = 10
+    EPOCHS = 2
     MAX_LEN = 300
 
     def __init__(self):
@@ -90,8 +81,8 @@ class BertClassifier:
         return test_acc
 
     def predict(self, inputs):
-        prepared_model = keras.models.load_model(self.MODEL_FILE_PATH)
-        if prepared_model:
-            self.nn_model = prepared_model
+        # prepared_model = keras.models.load_model(self.MODEL_FILE_PATH)
+        # if prepared_model:
+        #     self.nn_model = prepared_model
         predictions = self.nn_model.predict(inputs)
         return predictions
